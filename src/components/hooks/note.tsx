@@ -64,16 +64,17 @@ export function useNote() {
   };
 
   const handleDeleteNote = async (id: string) => {
-    const confirmDelete = window.confirm(
-      "Bạn có chắc chắn muốn xóa ghi chú này không?"
-    );
-    if (confirmDelete) {
-      const database = await getDatabaseInstance();
-      const noteRef = ref(database, `notes/${id}`);
-      await remove(noteRef);
-      toast.success("Đã xóa ghi chú!");
+    if (deleteCode.trim().toUpperCase() !== "XOA") {
+      toast.error("Vui lòng nhập đúng mã xác nhận 'XOA'");
+      return;
     }
+
+    const database = await getDatabaseInstance();
+    const noteRef = ref(database, `notes/${id}`);
+    await remove(noteRef);
+    toast.success("Đã xóa ghi chú!");
     setDeleteMode(null);
+    setDeleteCode("");
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {

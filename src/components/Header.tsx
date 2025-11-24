@@ -2,7 +2,9 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
-import { Notebook } from "lucide-react";
+import { Notebook, Search, Sparkles, Sun, Moon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 interface HeaderProps {
   searchTerm: string;
@@ -25,143 +27,78 @@ export default function Header({
   return (
     <div
       className="flex flex-col md:flex-row items-center p-5 gap-4 md:gap-0 
-            border-b border-gray-200 dark:border-gray-700 
-            bg-gradient-to-r from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 
+            border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60
             shadow-sm sticky top-0 z-10"
     >
-      <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 mb-4 md:mb-0">
+      <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-600 mb-4 md:mb-0 mr-8">
         DA22TTC-TVU
       </h1>
-      <div className="flex-1 w-full md:mx-8">
+      <div className="flex-1 w-full md:mr-8">
         <div className="max-w-[720px] relative">
-          <input
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
             type="text"
             value={searchTerm}
             onChange={onSearchChange}
             placeholder={
               isAISearch ? "Tìm kiếm bằng AI..." : "Tìm kiếm tài liệu"
             }
-            className="w-full px-12 py-3.5 bg-white dark:bg-gray-700 
-                        border border-gray-200 dark:border-gray-600 
-                        text-gray-900 dark:text-white
-                        rounded-xl outline-none 
-                        hover:border-blue-400 focus:border-blue-500 
-                        focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 
-                        transition-all duration-200"
+            className="w-full pl-10 pr-24 h-12 text-base bg-muted/50 border-muted-foreground/20 focus-visible:ring-primary"
             onKeyDown={(e) => {
               if (e.key === "Enter" && !isAISearch) {
                 onSearch();
               }
             }}
           />
-          <svg
-            className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2 transition-colors duration-200"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
 
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={onToggleAISearch}
-            className={`absolute ${isAISearch ? "right-[4.5rem]" : "right-4"} 
-                        top-1/2 -translate-y-1/2 p-1.5 rounded-lg
-                        transition-all duration-200 
-                        hover:bg-gray-100 dark:hover:bg-gray-600
+            className={`absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8
+                        transition-colors duration-200 
                         ${
                           isAISearch
-                            ? "text-blue-500 dark:text-blue-400"
-                            : "text-gray-400 dark:text-gray-500"
+                            ? "text-blue-500 hover:text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/50"
+                            : "text-muted-foreground hover:text-foreground"
                         }`}
             title={isAISearch ? "Đang dùng AI" : "Chuyển sang tìm kiếm AI"}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-5 h-5"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"
-              />
-            </svg>
-          </button>
+            <Sparkles className="h-4 w-4" />
+          </Button>
 
           {isAISearch && (
-            <button
+            <Button
+              size="sm"
               onClick={onSearch}
-              className="absolute right-4 top-1/2 -translate-y-1/2 px-3 py-1.5 
-                            bg-blue-500 text-white rounded-lg hover:bg-blue-600 
-                            transition-all duration-200 text-sm font-medium"
+              className="absolute right-12 top-1/2 -translate-y-1/2 h-8"
             >
               Tìm
-            </button>
+            </Button>
           )}
         </div>
       </div>
       <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto justify-center">
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors justify-center"
           title={
             theme === "dark"
               ? "Chuyển sang giao diện sáng"
               : "Chuyển sang giao diện tối"
           }
         >
-          {theme === "dark" ? (
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-              />
-            </svg>
-          ) : (
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-              />
-            </svg>
-          )}
-        </button>
+          <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+          <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          <span className="sr-only">Toggle theme</span>
+        </Button>
 
         <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
-          <button
-            className="flex items-center gap-2 px-6 py-2.5 rounded-xl
-                    bg-blue-500 dark:bg-blue-600 text-white
-                    hover:bg-blue-600 dark:hover:bg-blue-700 
-                    active:scale-95
-                    transition-all duration-200 font-medium"
-            onClick={() => router.push("/txt")}
-          >
-            <Notebook className="w-5 h-5" />
+          <Button className="gap-2" onClick={() => router.push("/txt")}>
+            <Notebook className="w-4 h-4" />
             Ghi chú
-          </button>
+          </Button>
         </div>
       </div>
     </div>

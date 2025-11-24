@@ -159,7 +159,7 @@ const useDrive = () => {
       const data = await response.json();
 
       if (data.error) {
-        alert("Lỗi khi tạo thư mục");
+        toast.error("Lỗi khi tạo thư mục");
       } else {
         // Đóng modal và reset form
         setIsCreateFolderModalOpen(false);
@@ -424,7 +424,7 @@ const useDrive = () => {
     } catch (error) {
       console.error("Lỗi:", error);
       setFiles((prev) => prev.filter((f) => f.id !== tempFolder.id));
-      alert("Có lỗi xảy ra khi tải lên thư mục");
+      toast.error("Có lỗi xảy ra khi tải lên thư mục");
     }
 
     event.target.value = "";
@@ -460,7 +460,7 @@ const useDrive = () => {
       }
     } catch (error) {
       console.error("Lỗi khi tải file:", error);
-      alert("Không thể tải file");
+      toast.error("Không thể tải file");
     }
   };
 
@@ -499,7 +499,7 @@ const useDrive = () => {
 
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({
-          model: "gemini-2.0-flash",
+          model: "models/gemini-flash-lite-latest",
         });
 
         const generationConfig = {

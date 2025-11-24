@@ -3,10 +3,19 @@ import React, { useState } from "react";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import FileList from "../components/FileList";
-import { Dialog } from "@headlessui/react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Toaster } from "react-hot-toast";
 import { useTheme } from "next-themes";
 import useDrive from "../components/hooks/drive";
+import { Menu } from "lucide-react";
 
 export default function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -43,14 +52,14 @@ export default function Home() {
   const { theme } = useTheme();
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden bg-white dark:bg-gray-900">
+    <div className="h-screen flex flex-col overflow-hidden bg-background">
       <Toaster
         position="top-center"
         containerStyle={{
           top: "20px",
           left: "50%",
           transform: "translateX(-50%)",
-          zIndex: 10000, // Đặt z-index cao hơn modal của Broadcast (9999)
+          zIndex: 10000,
         }}
         toastOptions={{
           style: {
@@ -63,25 +72,14 @@ export default function Home() {
       />
 
       <div className="max-w-[1800px] w-full mx-auto flex flex-col flex-1 overflow-hidden">
-        <div className="md:hidden p-4">
-          <button
+        <div className="md:hidden p-4 border-b">
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-gray-700 dark:text-gray-200"
           >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
-          </button>
+            <Menu className="w-6 h-6" />
+          </Button>
         </div>
 
         <Header
@@ -128,58 +126,46 @@ export default function Home() {
 
       <Dialog
         open={isCreateFolderModalOpen}
-        onClose={() => !isCreatingFolder && setIsCreateFolderModalOpen(false)}
-        className="relative z-50"
+        onOpenChange={(open) => {
+          if (!isCreatingFolder) setIsCreateFolderModalOpen(open);
+        }}
       >
-        <div
-          className="fixed inset-0 bg-black/30 dark:bg-black/50"
-          aria-hidden="true"
-        />
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Tạo thư mục mới</DialogTitle>
+          </DialogHeader>
 
-        <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="mx-auto w-[30vw] rounded-lg bg-white dark:bg-gray-800 p-6 shadow-xl">
-            <Dialog.Title className="text-lg font-medium mb-4 text-gray-900 dark:text-white">
-              Tạo thư mục mới
-            </Dialog.Title>
-
-            <form onSubmit={handleCreateFolderSubmit}>
-              <input
+          <form onSubmit={handleCreateFolderSubmit}>
+            <div className="py-4">
+              <Input
                 type="text"
                 value={newFolderName}
                 onChange={(e) => setNewFolderName(e.target.value)}
                 placeholder="Nhập tên thư mục"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 
-                bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 my-4"
                 disabled={isCreatingFolder}
               />
+            </div>
 
-              <div className="mt-4 flex justify-end space-x-2">
-                <button
-                  type="button"
-                  onClick={() =>
-                    !isCreatingFolder && setIsCreateFolderModalOpen(false)
-                  }
-                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 
-                  bg-gray-100 dark:bg-gray-700 rounded-md 
-                  hover:bg-gray-200 dark:hover:bg-gray-600"
-                  disabled={isCreatingFolder}
-                >
-                  Hủy
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white 
-                  bg-blue-500 rounded-md hover:bg-blue-600 
-                  disabled:opacity-50"
-                  disabled={isCreatingFolder || !newFolderName.trim()}
-                >
-                  {isCreatingFolder ? "Đang tạo..." : "Tạo thư mục"}
-                </button>
-              </div>
-            </form>
-          </Dialog.Panel>
-        </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() =>
+                  !isCreatingFolder && setIsCreateFolderModalOpen(false)
+                }
+                disabled={isCreatingFolder}
+              >
+                Hủy
+              </Button>
+              <Button
+                type="submit"
+                disabled={isCreatingFolder || !newFolderName.trim()}
+              >
+                {isCreatingFolder ? "Đang tạo..." : "Tạo thư mục"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
       </Dialog>
     </div>
   );

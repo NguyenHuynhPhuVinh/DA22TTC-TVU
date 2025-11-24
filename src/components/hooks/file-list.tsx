@@ -370,7 +370,7 @@ export const useFileList = ({
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Lỗi khi tải thư mục:", error);
-      alert("Có lỗi xảy ra khi tải thư mục");
+      toast.error("Có lỗi xảy ra khi tải thư mục");
     } finally {
       setCompressingFolder(null);
       setCompressionProgress(0);
