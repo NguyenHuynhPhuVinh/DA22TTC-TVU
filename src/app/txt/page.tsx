@@ -1,9 +1,9 @@
 "use client";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import "highlight.js/styles/github-dark.css";
 import { Toaster } from "react-hot-toast";
 import toast from "react-hot-toast";
-import gsap from "gsap";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useNote } from "@/components/hooks/note";
 import { TechLayout } from "@/components/layout";
@@ -59,34 +59,24 @@ const TxtPage = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [showAddForm, setShowAddForm] = useState(false);
   const [viewingNote, setViewingNote] = useState<ViewingNote | null>(null);
-  const gridRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!loading && gridRef.current && paginatedNotes.length > 0) {
-      const items = gridRef.current.querySelectorAll(".note-item");
-      if (items.length === 0) return;
-      
-      // Kill any existing animations first
-      gsap.killTweensOf(items);
-      
-      // Use requestAnimationFrame to ensure DOM is ready
-      requestAnimationFrame(() => {
-        gsap.set(items, { opacity: 1, y: 0 });
-        gsap.fromTo(
-          items,
-          { opacity: 0, y: 10 },
-          { 
-            opacity: 1, 
-            y: 0, 
-            duration: 0.3, 
-            stagger: 0.03, 
-            ease: "power2.out",
-            overwrite: "auto"
-          }
-        );
-      });
+  // Animation variants for notes
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.03 }
     }
-  }, [loading, paginatedNotes, currentPage, viewMode]);
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.3, ease: "easeOut" }
+    }
+  };
 
   useEffect(() => {
     document.body.style.overflow = deleteMode ? "hidden" : "unset";
@@ -201,9 +191,15 @@ const TxtPage = () => {
             <>
               {viewMode === "grid" ? (
                 <div className="flex-1 overflow-y-auto">
-                  <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <motion.div 
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="visible"
+                    key={`grid-${currentPage}-${searchQuery}`}
+                  >
                     {paginatedNotes.map((note, index) => (
-                      <div key={note.id} className="note-item">
+                      <motion.div key={note.id} variants={itemVariants} className="note-item">
                         <TxtNoteCard
                           id={note.id}
                           content={note.content}
@@ -214,12 +210,12 @@ const TxtPage = () => {
                           onDownload={() => handleDownload(note.content, note.timestamp)}
                           onDelete={() => { setDeleteMode(note.id); setDeleteCode(""); }}
                         />
-                      </div>
+                      </motion.div>
                     ))}
-                  </div>
+                  </motion.div>
                 </div>
               ) : (
-                <div ref={gridRef} className="flex-1 min-h-0 overflow-hidden">
+                <div className="flex-1 min-h-0 overflow-hidden">
                   <TxtNoteList
                     notes={paginatedNotes}
                     currentPage={currentPage}

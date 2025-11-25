@@ -1,7 +1,7 @@
 "use client";
-import React, { useRef, useEffect } from "react";
+import React, { useRef } from "react";
 import { toast } from "react-hot-toast";
-import gsap from "gsap";
+import { motion, AnimatePresence } from "framer-motion";
 import { useFileList } from "@/components/hooks/file-list";
 import { FileListProps } from "@/types";
 import { TechCard, TechProgress } from "@/components/ui/tech";
@@ -57,7 +57,6 @@ export const TechFileList: React.FC<FileListProps> = ({
   onDelete,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const gridRef = useRef<HTMLDivElement>(null);
 
   const {
     files: sortedFiles,
@@ -108,35 +107,28 @@ export const TechFileList: React.FC<FileListProps> = ({
     onDelete,
   });
 
-  // Animate files on load
-  useEffect(() => {
-    if (!isLoading && gridRef.current && sortedFiles.length > 0) {
-      const items = gridRef.current.querySelectorAll(".file-item");
-      gsap.fromTo(
-        items,
-        { opacity: 0, y: 20, scale: 0.98 },
-        {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 0.4,
-          stagger: 0.03,
-          ease: "power3.out",
-        }
-      );
+  // Animation variants for file items
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.03 }
     }
-  }, [isLoading, sortedFiles, isGridView]);
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20, scale: 0.98 },
+    visible: { 
+      opacity: 1, 
+      y: 0, 
+      scale: 1,
+      transition: { duration: 0.4, ease: [0.33, 1, 0.68, 1] }
+    }
+  };
 
   const handleFileClick = (fileId: string, mimeType: string) => {
     if (mimeType === "application/vnd.google-apps.folder") {
-      gsap.to(`[data-file-id="${fileId}"]`, {
-        scale: 0.98,
-        duration: 0.1,
-        yoyo: true,
-        repeat: 1,
-        ease: "power2.inOut",
-        onComplete: () => onFolderClick(fileId),
-      });
+      onFolderClick(fileId);
     }
   };
 
@@ -323,12 +315,18 @@ export const TechFileList: React.FC<FileListProps> = ({
             <p className="text-xs font-mono text-muted-foreground/60">{/* DROP FILES TO UPLOAD */}</p>
           </div>
         ) : (
-          <div ref={gridRef} className="p-6 lg:p-8">
+          <div className="p-6 lg:p-8">
             {isGridView ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              <motion.div 
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                key={`grid-${currentFolderId}-${sortCriteria}-${selectedExtension}`}
+              >
                 {sortedFiles.map((file) => (
+                  <motion.div key={file.id} variants={itemVariants} whileTap={{ scale: 0.98 }}>
                   <TechCard
-                    key={file.id}
                     className={cn(
                       "file-item p-5",
                       file.isUploading && "opacity-60 pointer-events-none"
@@ -417,13 +415,22 @@ export const TechFileList: React.FC<FileListProps> = ({
                       </div>
                     )}
                   </TechCard>
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             ) : (
-              <div className="border border-border divide-y divide-border">
+              <motion.div 
+                className="border border-border divide-y divide-border"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                key={`list-${currentFolderId}-${sortCriteria}-${selectedExtension}`}
+              >
                 {sortedFiles.map((file) => (
-                  <div
+                  <motion.div
                     key={file.id}
+                    variants={itemVariants}
+                    whileTap={{ scale: 0.98 }}
                     data-file-id={file.id}
                     className={cn(
                       "file-item group flex items-center gap-5 p-4 cursor-pointer transition-all duration-200",
@@ -510,9 +517,9 @@ export const TechFileList: React.FC<FileListProps> = ({
                         />
                       </div>
                     )}
-                  </div>
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             )}
           </div>
         )}
