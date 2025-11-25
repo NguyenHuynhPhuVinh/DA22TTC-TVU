@@ -1,17 +1,6 @@
 // src/app/api/drive/download-folder/route.ts
-import { google } from 'googleapis';
 import { NextResponse } from 'next/server';
-
-const auth = new google.auth.GoogleAuth({
-    credentials: JSON.parse(process.env.GOOGLE_CREDENTIALS || '{}'),
-    scopes: [
-        'https://www.googleapis.com/auth/drive',
-        'https://www.googleapis.com/auth/drive.readonly',
-        'https://www.googleapis.com/auth/drive.file'
-    ],
-});
-
-const drive = google.drive({ version: 'v3', auth });
+import { drive } from "@/lib/googleAuth";
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -52,7 +41,7 @@ export async function GET(request: Request) {
                 { responseType: 'arraybuffer' }
             );
 
-            return new NextResponse(Buffer.from(response.data as unknown as ArrayBuffer), {
+            return new NextResponse(new Uint8Array(response.data as unknown as ArrayBuffer), {
                 headers: {
                     'Content-Type': 'application/octet-stream',
                     'Access-Control-Allow-Origin': origin,

@@ -1,16 +1,5 @@
-import { google } from 'googleapis';
 import { NextResponse } from 'next/server';
-
-const auth = new google.auth.GoogleAuth({
-    credentials: JSON.parse(process.env.GOOGLE_CREDENTIALS || '{}'),
-    scopes: [
-        'https://www.googleapis.com/auth/drive',
-        'https://www.googleapis.com/auth/drive.readonly',
-        'https://www.googleapis.com/auth/drive.file'
-    ],
-});
-
-const drive = google.drive({ version: 'v3', auth });
+import { drive } from "@/lib/googleAuth";
 
 export async function GET(request: Request) {
     const origin = request.headers.get('origin') ?? process.env.NEXT_PUBLIC_APP_URL ?? '*';

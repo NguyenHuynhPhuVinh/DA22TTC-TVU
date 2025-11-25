@@ -1,15 +1,8 @@
-import { google } from 'googleapis';
 import { NextResponse } from 'next/server';
 import Redis from 'ioredis';
+import { drive } from "@/lib/googleAuth";
 
 const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
-
-const auth = new google.auth.GoogleAuth({
-    credentials: JSON.parse(process.env.GOOGLE_CREDENTIALS || '{}'),
-    scopes: ['https://www.googleapis.com/auth/drive'],
-});
-
-const drive = google.drive({ version: 'v3', auth });
 
 export async function DELETE(request: Request) {
     try {

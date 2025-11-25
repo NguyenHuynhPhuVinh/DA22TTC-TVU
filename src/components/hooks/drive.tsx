@@ -255,26 +255,16 @@ const useDrive = () => {
       const uploadPromise = new Promise<void>((resolve, reject) => {
         const upload = async () => {
           try {
-            // Lấy signed URL
-            const urlResponse = await fetch("/api/drive/get-upload-url", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                fileName: file.name,
-                mimeType: file.type,
-                parentId: currentFolderId,
-              }),
-            });
+            const formData = new FormData();
+            formData.append("file", file);
+            if (currentFolderId) {
+              formData.append("parentId", currentFolderId);
+            }
 
-            const { uploadUrl } = await urlResponse.json();
-
-            // Upload file
+            // Upload qua server-side API với XMLHttpRequest để theo dõi progress
             await new Promise<void>((uploadResolve, uploadReject) => {
               const xhr = new XMLHttpRequest();
-              xhr.open("PUT", uploadUrl, true);
-              xhr.setRequestHeader("Content-Type", file.type);
+              xhr.open("POST", "/api/drive/upload", true);
 
               xhr.upload.onprogress = (event) => {
                 if (event.lengthComputable) {
@@ -302,7 +292,7 @@ const useDrive = () => {
               };
 
               xhr.onerror = () => uploadReject(new Error("Upload failed"));
-              xhr.send(file);
+              xhr.send(formData);
             });
 
             resolve();
@@ -349,13 +339,14 @@ const useDrive = () => {
 
         // Reset toàn bộ cache sau khi upload
         setFileCache({});
-      }, 2500); // Đợi 1 giây sau khi tất cả upload xong
+      }, 2500);
     } catch (error) {
       console.error("Lỗi khi upload files:", error);
       // Xóa các file tạm trong trường hợp lỗi
       setFiles((prev) =>
         prev.filter((f) => !tempFiles.some((temp) => temp.id === f.id))
       );
+      toast.error("Có lỗi xảy ra khi tải lên file");
     }
 
     event.target.value = "";
