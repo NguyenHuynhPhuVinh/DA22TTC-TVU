@@ -1,6 +1,6 @@
 "use client";
-import React, { useEffect, useRef } from "react";
-import gsap from "gsap";
+import React from "react";
+import { motion } from "framer-motion";
 import { GridBackground, CircuitLines, ScanLine, CyberGrid } from "@/components/ui/tech";
 
 interface TechLayoutProps {
@@ -20,38 +20,11 @@ export const TechLayout: React.FC<TechLayoutProps> = ({
   showCyberGrid = false,
   accentColor = "#00ff88",
 }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    // Kill any existing animations on this element
-    gsap.killTweensOf(container);
-    
-    // Use gsap.context for proper cleanup
-    const ctx = gsap.context(() => {
-      // Set initial state and animate in one go
-      gsap.fromTo(container, 
-        { opacity: 0 },
-        { 
-          opacity: 1, 
-          duration: 0.5, 
-          ease: "power2.out",
-          overwrite: "auto"
-        }
-      );
-    }, container);
-
-    // Cleanup on unmount
-    return () => {
-      ctx.revert();
-    };
-  }, []);
-
   return (
-    <div
-      ref={containerRef}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
       className="relative min-h-screen bg-background text-foreground overflow-hidden"
     >
       {/* Background layers */}
@@ -119,7 +92,7 @@ export const TechLayout: React.FC<TechLayoutProps> = ({
           }}
         />
       </div>
-    </div>
+    </motion.div>
   );
 };
 

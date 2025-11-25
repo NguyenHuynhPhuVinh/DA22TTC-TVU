@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useRef, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import gsap from "gsap";
+import { motion, AnimatePresence } from "framer-motion";
 import { TechLayout, TechSidebar } from "@/components/layout";
 import {
   HomeFileCard,
@@ -67,7 +67,6 @@ function FilesPageContent() {
   const [showConfigModal, setShowConfigModal] = useState(false);
   const [adminPassword, setAdminPassword] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
-  const gridRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Check for ?admin in URL
@@ -159,32 +158,7 @@ function FilesPageContent() {
     onDelete: handleDelete,
   });
 
-  useEffect(() => {
-    if (!isLoading && gridRef.current && sortedFiles.length > 0) {
-      const items = gridRef.current.querySelectorAll(".file-item");
-      if (items.length === 0) return;
-      
-      // Kill any existing animations first
-      gsap.killTweensOf(items);
-      
-      // Use requestAnimationFrame to ensure DOM is ready
-      requestAnimationFrame(() => {
-        gsap.set(items, { opacity: 1, y: 0 });
-        gsap.fromTo(
-          items, 
-          { opacity: 0, y: 10 }, 
-          { 
-            opacity: 1, 
-            y: 0, 
-            duration: 0.3, 
-            stagger: 0.02, 
-            ease: "power2.out",
-            overwrite: "auto"
-          }
-        );
-      });
-    }
-  }, [isLoading, sortedFiles, isGridView]);
+  // Animation handled by framer-motion instead of GSAP
 
   const triggerFileUpload = () => fileInputRef.current?.click();
 
@@ -321,30 +295,39 @@ function FilesPageContent() {
               ) : sortedFiles.length === 0 ? (
                 <HomeEmptyState onCreateFolder={handleCreateFolder} onUploadFile={triggerFileUpload} />
               ) : (
-                <div ref={gridRef} className={isGridView ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" : "flex flex-col gap-1"}>
-                  {sortedFiles.map((file) => (
-                    <div key={file.id} className="file-item">
-                      <HomeFileCard
-                        id={file.id}
-                        name={file.name}
-                        mimeType={file.mimeType}
-                        createdTime={file.createdTime}
-                        size={file.size}
-                        isUploading={file.isUploading}
-                        uploadProgress={file.uploadProgress}
-                        isAdmin={isAdminMode}
-                        viewMode={isGridView ? "grid" : "list"}
-                        isDeleting={deletingFileId === file.id}
-                        onFolderClick={() => handleFolderClick(file.id, file.name)}
-                        onCopyLink={() => { navigator.clipboard.writeText(generateDownloadLink(file.id)); toast.success("LINK_COPIED"); }}
-                        onDownload={() => { file.mimeType === "application/vnd.google-apps.folder" ? handleDownloadFolder(file.id, file.name) : handleDownload(file.id, file.name); }}
-                        onDelete={() => startDeleteEffect(file.id)}
-                        onDeleteComplete={handleDeleteComplete}
-                        onPreview={() => setPreviewFile({ id: file.id, name: file.name })}
-                        formatFileSize={formatFileSize}
-                      />
-                    </div>
-                  ))}
+                <div className={isGridView ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" : "flex flex-col gap-1"}>
+                  <AnimatePresence mode="popLayout">
+                    {sortedFiles.map((file, index) => (
+                      <motion.div
+                        key={file.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ duration: 0.3, delay: index * 0.02 }}
+                        layout
+                      >
+                        <HomeFileCard
+                          id={file.id}
+                          name={file.name}
+                          mimeType={file.mimeType}
+                          createdTime={file.createdTime}
+                          size={file.size}
+                          isUploading={file.isUploading}
+                          uploadProgress={file.uploadProgress}
+                          isAdmin={isAdminMode}
+                          viewMode={isGridView ? "grid" : "list"}
+                          isDeleting={deletingFileId === file.id}
+                          onFolderClick={() => handleFolderClick(file.id, file.name)}
+                          onCopyLink={() => { navigator.clipboard.writeText(generateDownloadLink(file.id)); toast.success("LINK_COPIED"); }}
+                          onDownload={() => { file.mimeType === "application/vnd.google-apps.folder" ? handleDownloadFolder(file.id, file.name) : handleDownload(file.id, file.name); }}
+                          onDelete={() => startDeleteEffect(file.id)}
+                          onDeleteComplete={handleDeleteComplete}
+                          onPreview={() => setPreviewFile({ id: file.id, name: file.name })}
+                          formatFileSize={formatFileSize}
+                        />
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
                 </div>
               )}
             </div>

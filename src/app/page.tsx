@@ -1,7 +1,7 @@
 "use client";
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import gsap from "gsap";
+import { motion, AnimatePresence } from "framer-motion";
 import { TechLayout } from "@/components/layout";
 import {
   ParticleField,
@@ -75,52 +75,12 @@ const worlds: WorldCard[] = [
 
 export default function Home() {
   const router = useRouter();
-  const containerRef = useRef<HTMLDivElement>(null);
-  const cardsRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const dragStartX = useRef(0);
   const scrollStartX = useRef(0);
 
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-    
-    // Kill any existing animations
-    gsap.killTweensOf(container);
-    
-    // Use gsap.context for proper cleanup
-    const ctx = gsap.context(() => {
-      gsap.fromTo(container, 
-        { opacity: 0 },
-        { 
-          opacity: 1, 
-          duration: 0.8, 
-          ease: "power2.out",
-          overwrite: "auto"
-        }
-      );
-    }, container);
-
-    return () => {
-      ctx.revert();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!cardsRef.current) return;
-    const cardWidth = window.innerWidth;
-    
-    // Kill existing animation before starting new one
-    gsap.killTweensOf(cardsRef.current);
-    
-    gsap.to(cardsRef.current, {
-      x: -currentIndex * cardWidth,
-      duration: 0.6,
-      ease: "power3.out",
-      overwrite: "auto"
-    });
-  }, [currentIndex]);
+  // No GSAP needed - using framer-motion instead
 
   const goToWorld = (index: number) => {
     if (index >= 0 && index < worlds.length) {
@@ -161,8 +121,10 @@ export default function Home() {
         <DataStream color="#00ff88" density={6} speed={50} className="opacity-5" />
       </div>
 
-      <div
-        ref={containerRef}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
         className="h-screen w-screen overflow-hidden relative"
         onMouseDown={handleDragStart}
         onMouseUp={handleDragEnd}
@@ -187,8 +149,9 @@ export default function Home() {
         </header>
 
         {/* World Cards Container */}
-        <div
-          ref={cardsRef}
+        <motion.div
+          animate={{ x: -currentIndex * (typeof window !== 'undefined' ? window.innerWidth : 0) }}
+          transition={{ duration: 0.6, ease: [0.32, 0.72, 0, 1] }}
           className="flex h-full"
           style={{ width: `${worlds.length * 100}vw` }}
         >
@@ -302,7 +265,7 @@ export default function Home() {
               </div>
             </div>
           ))}
-        </div>
+        </motion.div>
 
         {/* Navigation Arrows */}
         <button
@@ -364,7 +327,7 @@ export default function Home() {
             ← SWIPE_TO_NAVIGATE →
           </GlitchText>
         </div>
-      </div>
+      </motion.div>
     </TechLayout>
   );
 }
