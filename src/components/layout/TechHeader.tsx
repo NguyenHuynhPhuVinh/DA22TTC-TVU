@@ -1,11 +1,11 @@
 "use client";
 import React, { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useTheme } from "next-themes";
+
 import gsap from "gsap";
 import { GlitchText, StatusIndicator, TechButton } from "@/components/ui/tech";
 import { NoteTechIcon, SearchTechIcon, ChipIcon } from "@/components/icons/TechIcons";
-import { Sun, Moon, RefreshCw, Sparkles } from "lucide-react";
+import { RefreshCw, Sparkles } from "lucide-react";
 
 interface TechHeaderProps {
   searchTerm: string;
@@ -26,7 +26,6 @@ export const TechHeader: React.FC<TechHeaderProps> = ({
   onReloadCache,
   isReloading,
 }) => {
-  const { theme, setTheme } = useTheme();
   const router = useRouter();
   const headerRef = useRef<HTMLElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
@@ -52,18 +51,6 @@ export const TechHeader: React.FC<TechHeaderProps> = ({
 
     return () => ctx.revert();
   }, []);
-
-  const handleThemeToggle = () => {
-    gsap.to(".theme-btn", {
-      rotate: 180,
-      duration: 0.3,
-      ease: "power2.inOut",
-      onComplete: () => {
-        setTheme(theme === "dark" ? "light" : "dark");
-        gsap.set(".theme-btn", { rotate: 0 });
-      },
-    });
-  };
 
   return (
     <header
@@ -164,13 +151,6 @@ export const TechHeader: React.FC<TechHeaderProps> = ({
                 <RefreshCw className={`w-4 h-4 ${isReloading ? "animate-spin" : ""}`} />
               </button>
             )}
-
-            <button
-              onClick={handleThemeToggle}
-              className="theme-btn p-3 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all"
-            >
-              {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            </button>
 
             <TechButton
               variant="secondary"

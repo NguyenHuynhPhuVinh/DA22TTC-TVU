@@ -17,14 +17,12 @@ import {
   TechBadge, 
   WaveformVisualizer,
   DataStream,
-  ScanLine,
   StatusIndicator,
   GlitchText,
   PulseRing,
   LoadingDots,
   HologramEffect,
   RadarScan,
-  SystemStats,
   TechProgress,
 } from "@/components/ui/tech";
 import { useFileList } from "@/components/hooks/file-list";
@@ -117,20 +115,19 @@ export default function Home() {
     onDelete: handleDelete,
   });
 
-  // Animate files on load
+  // Animate files on load - items visible by default, animation is enhancement only
   useEffect(() => {
     if (!isLoading && gridRef.current && sortedFiles.length > 0) {
       const items = gridRef.current.querySelectorAll(".file-item");
       gsap.fromTo(
         items,
-        { opacity: 0, y: 20, scale: 0.95 },
+        { opacity: 0.5, y: 10 },
         {
           opacity: 1,
           y: 0,
-          scale: 1,
-          duration: 0.4,
-          stagger: 0.04,
-          ease: "power3.out",
+          duration: 0.3,
+          stagger: 0.02,
+          ease: "power2.out",
         }
       );
     }
@@ -158,9 +155,6 @@ export default function Home() {
           className="opacity-10"
         />
       </div>
-
-      {/* Scan line effect */}
-      <ScanLine color="#00ff88" speed={4} />
 
       <Toaster
         position="bottom-center"
@@ -339,22 +333,6 @@ export default function Home() {
         onChange={handleUploadFile}
         className="hidden"
       />
-
-      {/* System Stats - Fixed bottom right */}
-      <div className="fixed bottom-4 right-4 z-40 hidden lg:block">
-        <div className="border border-border bg-background/95 backdrop-blur-sm p-4 w-48">
-          <div className="text-[10px] font-mono text-muted-foreground mb-3 flex items-center gap-2">
-            <StatusIndicator status={isLoading ? "loading" : "online"} size="sm" />
-            SYSTEM_MONITOR
-          </div>
-          <SystemStats
-            filesCount={files.length}
-            storageUsed={driveInfo?.used ?? 0}
-            storageTotal={driveInfo?.total ?? 100}
-            isOnline={!isLoading}
-          />
-        </div>
-      </div>
 
       {/* Create Folder Dialog */}
       <Dialog

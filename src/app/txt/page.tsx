@@ -9,7 +9,6 @@ import { TechLayout } from "@/components/layout";
 import { 
   ParticleField, 
   DataStream, 
-  ScanLine, 
   RadarScan, 
   LoadingDots,
   StatusIndicator,
@@ -56,20 +55,19 @@ const TxtPage = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
 
-  // Animate notes on page change
+  // Animate notes on page change - items visible by default
   useEffect(() => {
     if (!loading && gridRef.current && paginatedNotes.length > 0) {
       const items = gridRef.current.querySelectorAll(".note-item");
       gsap.fromTo(
         items,
-        { opacity: 0, y: 30, scale: 0.95 },
+        { opacity: 0.5, y: 10 },
         {
           opacity: 1,
           y: 0,
-          scale: 1,
-          duration: 0.5,
-          stagger: 0.05,
-          ease: "power3.out",
+          duration: 0.3,
+          stagger: 0.03,
+          ease: "power2.out",
         }
       );
     }
@@ -133,9 +131,6 @@ const TxtPage = () => {
           className="opacity-10"
         />
       </div>
-
-      {/* Scan line effect */}
-      <ScanLine color="#00ff88" speed={5} />
 
       {/* Navigation */}
       <TxtNavbar
