@@ -9,6 +9,7 @@ import {
   HomeEmptyState,
   HomeDropZone,
 } from "@/components/home";
+import { FilePreviewDialog } from "@/components/files/FilePreviewDialog";
 import {
   ParticleField,
   NeonBorder,
@@ -39,6 +40,7 @@ import Link from "next/link";
 
 export default function FilesPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [previewFile, setPreviewFile] = useState<{ id: string; name: string } | null>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -262,6 +264,7 @@ export default function FilesPage() {
                         onCopyLink={() => { navigator.clipboard.writeText(generateDownloadLink(file.id)); toast.success("LINK_COPIED"); }}
                         onDownload={() => { file.mimeType === "application/vnd.google-apps.folder" ? handleDownloadFolder(file.id, file.name) : handleDownload(file.id, file.name); }}
                         onDelete={() => handleDelete(file.id)}
+                        onPreview={() => setPreviewFile({ id: file.id, name: file.name })}
                         formatFileSize={formatFileSize}
                       />
                     </div>
@@ -274,6 +277,19 @@ export default function FilesPage() {
       </div>
 
       <input ref={fileInputRef} type="file" multiple onChange={handleUploadFile} className="hidden" />
+
+      {/* File Preview Dialog */}
+      <FilePreviewDialog
+        isOpen={!!previewFile}
+        onClose={() => setPreviewFile(null)}
+        fileId={previewFile?.id || ""}
+        fileName={previewFile?.name || ""}
+        onDownload={() => {
+          if (previewFile) {
+            handleDownload(previewFile.id, previewFile.name);
+          }
+        }}
+      />
 
       <Dialog open={isCreateFolderModalOpen} onOpenChange={(open) => { if (!isCreatingFolder) setIsCreateFolderModalOpen(open); }}>
         <DialogContent className="sm:max-w-md border-[#00ff88]/30 rounded-none bg-background p-0 overflow-hidden">

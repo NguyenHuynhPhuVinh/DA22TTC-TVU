@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { MoreVertical, Copy, Download, Trash2 } from "lucide-react";
+import { MoreVertical, Copy, Download, Trash2, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface HomeFileCardProps {
@@ -27,6 +27,7 @@ interface HomeFileCardProps {
   onCopyLink: () => void;
   onDownload: () => void;
   onDelete: () => void;
+  onPreview?: () => void;
   formatFileSize: (bytes: number) => string;
 }
 
@@ -44,6 +45,7 @@ export const HomeFileCard: React.FC<HomeFileCardProps> = ({
   onCopyLink,
   onDownload,
   onDelete,
+  onPreview,
   formatFileSize,
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -95,6 +97,12 @@ export const HomeFileCard: React.FC<HomeFileCardProps> = ({
     }
   };
 
+  const handleDoubleClick = () => {
+    if (!isFolder && !isUploading && onPreview) {
+      onPreview();
+    }
+  };
+
   // List view layout
   if (viewMode === "list") {
     return (
@@ -105,6 +113,7 @@ export const HomeFileCard: React.FC<HomeFileCardProps> = ({
           isUploading && "opacity-60 pointer-events-none"
         )}
         onClick={handleClick}
+        onDoubleClick={handleDoubleClick}
       >
         <div className="flex items-center gap-4 px-4 py-3">
           {/* Icon */}
@@ -146,6 +155,12 @@ export const HomeFileCard: React.FC<HomeFileCardProps> = ({
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-44 rounded-none border-border font-mono">
+                {!isFolder && onPreview && (
+                  <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onPreview(); }} className="text-xs">
+                    <Eye className="w-4 h-4 mr-2" />
+                    VIEW
+                  </DropdownMenuItem>
+                )}
                 {!isFolder && (
                   <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onCopyLink(); }} className="text-xs">
                     <Copy className="w-4 h-4 mr-2" />
@@ -192,6 +207,7 @@ export const HomeFileCard: React.FC<HomeFileCardProps> = ({
         isUploading && "opacity-60 pointer-events-none"
       )}
       onClick={handleClick}
+      onDoubleClick={handleDoubleClick}
     >
       <NeonBorder
         color={isFolder ? "#00ff88" : "#00aaff"}
@@ -227,6 +243,12 @@ export const HomeFileCard: React.FC<HomeFileCardProps> = ({
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-44 rounded-none border-border font-mono">
+                  {!isFolder && onPreview && (
+                    <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onPreview(); }} className="text-xs">
+                      <Eye className="w-4 h-4 mr-2" />
+                      VIEW
+                    </DropdownMenuItem>
+                  )}
                   {!isFolder && (
                     <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onCopyLink(); }} className="text-xs">
                       <Copy className="w-4 h-4 mr-2" />
