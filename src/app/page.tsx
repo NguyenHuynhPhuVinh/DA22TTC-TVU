@@ -1,8 +1,7 @@
 "use client";
 import React, { useState } from "react";
-import Header from "../components/Header";
-import Sidebar from "../components/Sidebar";
-import FileList from "../components/FileList";
+import { TechLayout, TechHeader, TechSidebar } from "@/components/layout";
+import { TechFileList } from "@/components/files";
 import {
   Dialog,
   DialogContent,
@@ -13,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Toaster } from "react-hot-toast";
-import useDrive from "../components/hooks/drive";
+import useDrive from "@/components/hooks/drive";
 import { Menu } from "lucide-react";
 
 export default function Home() {
@@ -28,7 +27,6 @@ export default function Home() {
     folderPath,
     searchTerm,
     isAISearch,
-    setSearchTerm,
     handleSearchChange,
     handleSearchClick,
     handleFolderClick,
@@ -53,7 +51,7 @@ export default function Home() {
   } = useDrive();
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden bg-background">
+    <TechLayout showGrid showCircuits={false} showScanLine={false}>
       <Toaster
         position="bottom-center"
         toastOptions={{
@@ -61,23 +59,24 @@ export default function Home() {
             background: "hsl(var(--foreground))",
             color: "hsl(var(--background))",
             borderRadius: 0,
-            fontSize: "13px",
+            fontSize: "12px",
+            fontFamily: "monospace",
           },
         }}
       />
 
       {/* Mobile Menu Button */}
-      <div className="md:hidden flex items-center h-14 px-4 border-b">
+      <div className="md:hidden flex items-center h-14 px-4 border-b border-border">
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           className="p-2 text-muted-foreground hover:text-foreground transition-colors"
         >
           <Menu className="w-5 h-5" />
         </button>
-        <span className="ml-3 text-sm font-medium">DA22TTC</span>
+        <span className="ml-3 text-xs font-mono tracking-wider">DA22TTC</span>
       </div>
 
-      <Header
+      <TechHeader
         searchTerm={searchTerm}
         onSearchChange={handleSearchChange}
         isAISearch={isAISearch}
@@ -88,7 +87,7 @@ export default function Home() {
       />
 
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar
+        <TechSidebar
           driveInfo={driveInfo}
           onCreateFolder={handleCreateFolder}
           onUploadFile={handleUploadFile}
@@ -100,7 +99,7 @@ export default function Home() {
           isLoading={isSidebarLoading}
         />
 
-        <FileList
+        <TechFileList
           files={files}
           isLoading={isLoading}
           currentFolderId={currentFolderId}
@@ -127,9 +126,9 @@ export default function Home() {
           if (!isCreatingFolder) setIsCreateFolderModalOpen(open);
         }}
       >
-        <DialogContent className="sm:max-w-md rounded-none border-border">
+        <DialogContent className="sm:max-w-md rounded-none border-border font-mono">
           <DialogHeader>
-            <DialogTitle className="text-lg font-normal">Tạo thư mục mới</DialogTitle>
+            <DialogTitle className="text-lg font-normal font-mono">NEW_FOLDER</DialogTitle>
           </DialogHeader>
 
           <form onSubmit={handleCreateFolderSubmit}>
@@ -137,9 +136,9 @@ export default function Home() {
               type="text"
               value={newFolderName}
               onChange={(e) => setNewFolderName(e.target.value)}
-              placeholder="Tên thư mục"
+              placeholder="FOLDER_NAME"
               disabled={isCreatingFolder}
-              className="rounded-none border-border"
+              className="rounded-none border-border font-mono text-xs"
               autoFocus
             />
 
@@ -149,21 +148,21 @@ export default function Home() {
                 variant="ghost"
                 onClick={() => !isCreatingFolder && setIsCreateFolderModalOpen(false)}
                 disabled={isCreatingFolder}
-                className="rounded-none"
+                className="rounded-none font-mono text-xs"
               >
-                Hủy
+                CANCEL
               </Button>
               <Button
                 type="submit"
                 disabled={isCreatingFolder || !newFolderName.trim()}
-                className="rounded-none"
+                className="rounded-none font-mono text-xs"
               >
-                {isCreatingFolder ? "Đang tạo..." : "Tạo"}
+                {isCreatingFolder ? "CREATING..." : "CREATE"}
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
-    </div>
+    </TechLayout>
   );
 }
