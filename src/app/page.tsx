@@ -83,17 +83,18 @@ export default function Home() {
   const scrollStartX = useRef(0);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    const container = containerRef.current;
+    if (!container) return;
     
     // Kill any existing animations
-    gsap.killTweensOf(containerRef.current);
+    gsap.killTweensOf(container);
     
     // Set initial state
-    gsap.set(containerRef.current, { opacity: 0 });
+    gsap.set(container, { opacity: 0 });
     
     // Animate with requestAnimationFrame for DOM ready
     requestAnimationFrame(() => {
-      gsap.to(containerRef.current, { 
+      gsap.to(container, { 
         opacity: 1, 
         duration: 0.8, 
         ease: "power2.out" 
@@ -101,9 +102,7 @@ export default function Home() {
     });
 
     return () => {
-      if (containerRef.current) {
-        gsap.killTweensOf(containerRef.current);
-      }
+      gsap.killTweensOf(container);
     };
   }, []);
 

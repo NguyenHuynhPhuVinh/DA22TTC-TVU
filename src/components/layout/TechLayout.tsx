@@ -23,17 +23,18 @@ export const TechLayout: React.FC<TechLayoutProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    const container = containerRef.current;
+    if (!container) return;
 
     // Kill any existing animations on this element
-    gsap.killTweensOf(containerRef.current);
+    gsap.killTweensOf(container);
     
     // Set initial state immediately to prevent flash
-    gsap.set(containerRef.current, { opacity: 0 });
+    gsap.set(container, { opacity: 0 });
 
     // Initial page load animation with slight delay for DOM ready
     requestAnimationFrame(() => {
-      gsap.to(containerRef.current, { 
+      gsap.to(container, { 
         opacity: 1, 
         duration: 0.5, 
         ease: "power2.out" 
@@ -42,9 +43,7 @@ export const TechLayout: React.FC<TechLayoutProps> = ({
 
     // Cleanup on unmount
     return () => {
-      if (containerRef.current) {
-        gsap.killTweensOf(containerRef.current);
-      }
+      gsap.killTweensOf(container);
     };
   }, []);
 
