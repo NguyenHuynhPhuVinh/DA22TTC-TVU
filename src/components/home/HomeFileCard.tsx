@@ -1,7 +1,7 @@
 "use client";
 import React, { useRef, useEffect } from "react";
 import gsap from "gsap";
-import { NeonBorder, TechBadge, TechProgress } from "@/components/ui/tech";
+import { NeonBorder, TechBadge, LightningUploadProgress } from "@/components/ui/tech";
 import { FolderTechIcon, FileTechIcon } from "@/components/icons/TechIcons";
 import {
   DropdownMenu,
@@ -189,8 +189,8 @@ export const HomeFileCard: React.FC<HomeFileCardProps> = ({
 
           {/* Upload progress */}
           {isUploading && (
-            <div className="w-24 shrink-0">
-              <TechProgress value={uploadProgress || 0} max={100} height="sm" color="#00ff88" />
+            <div className="w-32 shrink-0">
+              <LightningUploadProgress value={uploadProgress || 0} max={100} />
             </div>
           )}
         </div>
@@ -290,11 +290,9 @@ export const HomeFileCard: React.FC<HomeFileCardProps> = ({
           {/* Upload progress */}
           {isUploading && (
             <div className="mt-4">
-              <TechProgress
+              <LightningUploadProgress
                 value={uploadProgress || 0}
                 max={100}
-                height="sm"
-                color="#00ff88"
               />
               <div className="text-[10px] font-mono text-[#00ff88] text-right mt-1">
                 {uploadProgress}%
