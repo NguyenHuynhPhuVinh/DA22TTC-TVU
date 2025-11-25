@@ -1,6 +1,6 @@
 import toast from "react-hot-toast";
 import { GoogleGenAI } from "@google/genai";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { DriveInfo, FileItem } from "../../types";
 
 const useDrive = () => {
@@ -468,10 +468,21 @@ const useDrive = () => {
     event.target.value = "";
   };
 
-  const checkFolderContent = async (folderId: string) => {
+  const checkFolderContent = useCallback(async (folderId: string) => {
+    // Kiểm tra cache trước
+    if (fileCache[folderId]) {
+      return fileCache[folderId].some(
+        (file: FileItem) =>
+          file.mimeType === "application/vnd.google-apps.folder"
+      );
+    }
+    
     try {
       const response = await fetch(`/api/drive?folderId=${folderId}`);
       const data = await response.json();
+      // Cache kết quả
+      const sortedFiles = sortFilesByType(data.files || []);
+      setFileCache((prev) => ({ ...prev, [folderId]: sortedFiles }));
       return data.files.some(
         (file: FileItem) =>
           file.mimeType === "application/vnd.google-apps.folder"
@@ -480,7 +491,7 @@ const useDrive = () => {
       console.error("Lỗi khi kiểm tra nội dung thư mục:", error);
       return false;
     }
-  };
+  }, [fileCache]);
 
   const handleDownload = async (fileId: string, fileName: string) => {
     try {

@@ -107,8 +107,9 @@ const TxtPage = () => {
         <DataStream color="#00d4ff" density={8} speed={60} className="opacity-5" />
       </div>
 
+      <div className="h-screen flex flex-col overflow-hidden">
       {/* Simple Header */}
-      <header className="sticky top-0 z-50 bg-background/95 border-b border-border backdrop-blur-sm">
+      <header className="shrink-0 z-50 bg-background/95 border-b border-border backdrop-blur-sm">
         <div className="flex items-center justify-between px-4 md:px-6 h-14">
           <div className="flex items-center gap-4">
             <Link href="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
@@ -148,8 +149,8 @@ const TxtPage = () => {
       />
 
       {/* Content */}
-      <main className="px-4 md:px-6 lg:px-8 py-6 relative z-10">
-        <div className="max-w-[1400px] mx-auto">
+      <main className="flex-1 overflow-hidden px-4 md:px-6 lg:px-8 py-6 relative z-10">
+        <div className="max-w-[1400px] mx-auto h-full flex flex-col">
           {loading ? (
             <div className="relative">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -175,42 +176,46 @@ const TxtPage = () => {
             <TxtEmptyState isSearching={!!searchQuery} onCreateNew={() => setShowAddForm(true)} />
           ) : (
             <>
-              {viewMode === "grid" ? (
-                <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {paginatedNotes.map((note, index) => (
-                    <div key={note.id} className="note-item">
-                      <TxtNoteCard
-                        id={note.id}
-                        content={note.content}
-                        timestamp={note.timestamp}
-                        index={(currentPage - 1) * 6 + index + 1}
-                        isExpanded={expandedNotes[note.id] || false}
-                        onToggleExpand={() => toggleNoteExpansion(note.id)}
-                        onCopy={() => handleCopy(note.content)}
-                        onDownload={() => handleDownload(note.content, note.timestamp)}
-                        onDelete={() => { setDeleteMode(note.id); setDeleteCode(""); }}
-                      />
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div ref={gridRef}>
-                  <TxtNoteList
-                    notes={paginatedNotes}
-                    expandedNotes={expandedNotes}
-                    currentPage={currentPage}
-                    onToggleExpand={toggleNoteExpansion}
-                    onCopy={handleCopy}
-                    onDownload={handleDownload}
-                    onDelete={(id) => { setDeleteMode(id); setDeleteCode(""); }}
-                  />
-                </div>
-              )}
+              <div className="flex-1 overflow-y-auto">
+                {viewMode === "grid" ? (
+                  <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {paginatedNotes.map((note, index) => (
+                      <div key={note.id} className="note-item">
+                        <TxtNoteCard
+                          id={note.id}
+                          content={note.content}
+                          timestamp={note.timestamp}
+                          index={(currentPage - 1) * 6 + index + 1}
+                          isExpanded={expandedNotes[note.id] || false}
+                          onToggleExpand={() => toggleNoteExpansion(note.id)}
+                          onCopy={() => handleCopy(note.content)}
+                          onDownload={() => handleDownload(note.content, note.timestamp)}
+                          onDelete={() => { setDeleteMode(note.id); setDeleteCode(""); }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div ref={gridRef}>
+                    <TxtNoteList
+                      notes={paginatedNotes}
+                      expandedNotes={expandedNotes}
+                      currentPage={currentPage}
+                      onToggleExpand={toggleNoteExpansion}
+                      onCopy={handleCopy}
+                      onDownload={handleDownload}
+                      onDelete={(id) => { setDeleteMode(id); setDeleteCode(""); }}
+                    />
+                  </div>
+                )}
+              </div>
               <TxtPagination currentPage={currentPage} totalPages={totalPages} onPageChange={goToPage} />
             </>
           )}
         </div>
       </main>
+
+      </div>
 
       <TxtAddDialog open={showAddForm} onOpenChange={setShowAddForm} value={newNote} onChange={setNewNote} onSave={handleAddNote} />
 

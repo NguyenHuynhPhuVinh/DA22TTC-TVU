@@ -59,7 +59,7 @@ export const TxtNoteList: React.FC<TxtNoteListProps> = ({
   }, [notes, currentPage]);
 
   return (
-    <div ref={listRef} className="border border-border divide-y divide-border">
+    <div ref={listRef} className="flex flex-col gap-2">
       {notes.map((note, index) => {
         const lineCount = countLines(note.content);
         const shouldTruncate = lineCount > 5;
@@ -68,7 +68,7 @@ export const TxtNoteList: React.FC<TxtNoteListProps> = ({
         return (
           <article
             key={note.id}
-            className="list-item group hover:bg-[#00d4ff]/5 transition-colors"
+            className="list-item group border border-border hover:border-[#00d4ff] transition-all"
           >
             <div className="p-5">
               <div className="flex items-start gap-6">

@@ -221,18 +221,30 @@ export const useFileList = ({
     return false;
   });
 
+  // Track folder IDs đã check để tránh gọi API lặp lại
+  const checkedFolderIds = useRef<Set<string>>(new Set());
+  
   useEffect(() => {
     const checkFolders = async () => {
-      const results: { [key: string]: boolean } = {};
-      for (const file of files) {
-        if (file.mimeType === "application/vnd.google-apps.folder") {
-          results[file.id] = await onCheckFolderContent(file.id);
-        }
+      const foldersToCheck = files.filter(
+        (file) => 
+          file.mimeType === "application/vnd.google-apps.folder" &&
+          !checkedFolderIds.current.has(file.id)
+      );
+      
+      if (foldersToCheck.length === 0) return;
+      
+      const results: { [key: string]: boolean } = { ...hasFolders };
+      
+      for (const file of foldersToCheck) {
+        checkedFolderIds.current.add(file.id);
+        results[file.id] = await onCheckFolderContent(file.id);
       }
+      
       setHasFolders(results);
     };
     checkFolders();
-  }, [files, onCheckFolderContent]);
+  }, [files]); // Chỉ depend vào files, không depend vào onCheckFolderContent
 
   const handleDragEnter = (e: React.DragEvent) => {
     e.preventDefault();
