@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import gsap from "gsap";
 import { TechLayout, TechSidebar } from "@/components/layout";
@@ -39,6 +39,27 @@ import { Menu, FolderPlus, Search, Sparkles, RefreshCw, Home, Settings } from "l
 import Link from "next/link";
 
 export default function FilesPage() {
+  return (
+    <Suspense fallback={<FilesPageLoading />}>
+      <FilesPageContent />
+    </Suspense>
+  );
+}
+
+function FilesPageLoading() {
+  return (
+    <TechLayout showGrid showCircuits accentColor="#00ff88">
+      <div className="h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <RadarScan size={80} color="#00ff88" speed={2} />
+          <LoadingDots color="#00ff88" size={6} />
+        </div>
+      </div>
+    </TechLayout>
+  );
+}
+
+function FilesPageContent() {
   const searchParams = useSearchParams();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [previewFile, setPreviewFile] = useState<{ id: string; name: string } | null>(null);
