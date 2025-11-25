@@ -1,5 +1,5 @@
 import toast from "react-hot-toast";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 import { useState, useEffect } from "react";
 import { DriveInfo, FileItem } from "../../types";
 
@@ -535,23 +535,7 @@ const useDrive = () => {
           mimeType: file.mimeType,
         }));
 
-        const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({
-          model: "models/gemini-flash-lite-latest",
-        });
-
-        const generationConfig = {
-          temperature: 1,
-          topP: 0.95,
-          topK: 40,
-          maxOutputTokens: 8192,
-          responseMimeType: "application/json",
-        };
-
-        const chatSession = model.startChat({
-          generationConfig,
-          history: [],
-        });
+        const ai = new GoogleGenAI({ apiKey });
 
         const prompt = `
             Bạn là AI assistant giúp tìm kiếm file và thư mục. Với yêu cầu tìm kiếm: "${term}"
@@ -583,8 +567,18 @@ const useDrive = () => {
             ${JSON.stringify(simpleFiles, null, 2)}
           `;
 
-        const result = await chatSession.sendMessage(prompt);
-        const text = result.response.text();
+        const response = await ai.models.generateContent({
+          model: "models/gemini-flash-lite-latest",
+          contents: prompt,
+          config: {
+            temperature: 1,
+            topP: 0.95,
+            topK: 40,
+            maxOutputTokens: 8192,
+            responseMimeType: "application/json",
+          },
+        });
+        const text = response.text ?? "";
 
         try {
           const fileIds = JSON.parse(text);
