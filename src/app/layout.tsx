@@ -6,8 +6,8 @@ import { Providers } from './providers'
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "DA22TTC-TVU",
-  description: "Nơi chia sẽ và lưu trữ tài liệu học tập dành cho sinh viên lớp DA22TTC của TVU.",
+  title: "TomiSakaeTech",
+  description: "Trang Web với các tiện ích thần kỳ!",
 };
 
 export default function RootLayout({
