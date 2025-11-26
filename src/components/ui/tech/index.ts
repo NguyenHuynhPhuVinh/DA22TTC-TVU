@@ -40,3 +40,6 @@ export { VoidZone } from "./VoidZone";
 export { LightningUploadProgress } from "./LightningUploadProgress";
 export { FileDeleteEffect, useFileDeleteEffect } from "./FileDeleteEffect";
 export { TechToastContainer, techToast } from "./TechToast";
+
+// 3D Effects
+export { TechRubikCube } from "./TechRubikCube";

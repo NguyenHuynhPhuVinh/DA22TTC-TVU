@@ -14,6 +14,7 @@ import {
   HackerText,
   VoidText,
   VoidZone,
+  TechRubikCube,
 } from "@/components/ui/tech";
 import { HardDrive, FileText, Lock, ChevronLeft, ChevronRight, Database } from "lucide-react";
 
@@ -327,6 +328,9 @@ export default function Home() {
             ← SWIPE_TO_NAVIGATE →
           </GlitchText>
         </div>
+
+        {/* 3D Rubik Cube */}
+        <TechRubikCube size={30} color="#00ff88" />
       </motion.div>
     </TechLayout>
   );
