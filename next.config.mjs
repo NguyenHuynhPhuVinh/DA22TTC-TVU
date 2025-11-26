@@ -1,7 +1,6 @@
-import million from 'million/compiler';
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    turbopack: {}, // Sử dụng Turbopack (Next.js 16 default, nhanh hơn Webpack)
     async headers() {
         return [
             {
@@ -17,6 +16,4 @@ const nextConfig = {
     }
 }
 
-export default million.next(nextConfig, {
-    auto: { rsc: true } // Tự động optimize React Server Components
-});
+export default nextConfig;
