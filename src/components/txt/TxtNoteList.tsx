@@ -174,8 +174,8 @@ export const TxtNoteList: React.FC<TxtNoteListProps> = ({
         )}
       </button>
 
-      {/* Notes List - each item has fixed height */}
-      <div ref={listRef} className="flex-1 min-h-0 flex flex-col gap-2 overflow-hidden">
+      {/* Notes List - each item stretches to fill available space */}
+      <div ref={listRef} className="flex-1 min-h-0 flex flex-col gap-2 overflow-hidden pt-2">
         {visibleNotes.map((note, idx) => {
           const globalIndex = (currentPage - 1) * 6 + startIndex + idx + 1;
           const lineCount = countLines(note.content);
@@ -183,7 +183,7 @@ export const TxtNoteList: React.FC<TxtNoteListProps> = ({
           return (
             <article
               key={note.id}
-              className="list-item h-[calc(33.333%-8px)] shrink-0 group border border-[#00d4ff]/20 hover:border-[#00d4ff]/60 bg-[#0a0a0f]/60 backdrop-blur-xs transition-all duration-300 flex flex-col overflow-hidden cursor-pointer relative"
+              className="list-item flex-1 min-h-0 group border border-[#00d4ff]/20 hover:border-[#00d4ff]/60 hover:translate-y-[-2px] bg-[#0a0a0f]/60 backdrop-blur-xs transition-all duration-300 flex flex-col overflow-hidden cursor-pointer relative"
               onClick={() => onView(note, globalIndex)}
             >
               {/* Item Header */}
